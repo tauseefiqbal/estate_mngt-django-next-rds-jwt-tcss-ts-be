@@ -1,0 +1,171 @@
+# Render Blueprint - Infrastructure as Code
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ── Django Backend (Web Service) ──
+  - type: web
+    name: estate-mngt-api
+    runtime: python
+    plan: starter
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.3"
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ADMIN_URL
+        value: secure-admin-panel/
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com,.trainingwebdev.com"
+      - key: POSTGRES_HOST
+        value: ep-spring-fog-a8ejnwzx-pooler.eastus2.azure.neon.tech
+      - key: POSTGRES_PORT
+        value: "5432"
+      - key: POSTGRES_DB
+        value: estate_mngt_db
+      - key: POSTGRES_USER
+        value: neondb_owner
+      - key: POSTGRES_PASSWORD
+        sync: false # Set manually in Render dashboard
+      - key: REDIS_URL
+        sync: false # Set manually in Render dashboard
+      - key: CELERY_BROKER_URL
+        sync: false # Set to same value as REDIS_URL
+      - key: CELERY_RESULT_BACKEND
+        sync: false # Set to same value as REDIS_URL
+      - key: CLOUDINARY_CLOUD_NAME
+        value: djftcdgl0
+      - key: CLOUDINARY_API_KEY
+        value: "543643966289379"
+      - key: CLOUDINARY_API_SECRET
+        sync: false # Set manually in Render dashboard
+      - key: COOKIE_SECURE
+        value: "True"
+      - key: SIGNING_KEY
+        generateValue: true
+      - key: EMAIL_HOST
+        value: smtp.mailgun.org
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: SMTP_MAILGUN_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: noreply@trainingwebdev.com
+      - key: DOMAIN
+        value: trainingwebdev.com
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: REDIRECT_URIS
+        value: https://trainingwebdev.com/api/v1/auth/google
+
+  # ── Celery Worker (Background Worker) ──
+  - type: worker
+    name: estate-mngt-celery
+    runtime: python
+    plan: starter
+    buildCommand: "pip install -r requirements/production.txt"
+    startCommand: "celery -A config.celery_app worker -l info"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          name: estate-mngt-api
+          type: web
+          envVarKey: DJANGO_SECRET_KEY
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: POSTGRES_HOST
+        value: ep-spring-fog-a8ejnwzx-pooler.eastus2.azure.neon.tech
+      - key: POSTGRES_PORT
+        value: "5432"
+      - key: POSTGRES_DB
+        value: estate_mngt_db
+      - key: POSTGRES_USER
+        value: neondb_owner
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        value: djftcdgl0
+      - key: CLOUDINARY_API_KEY
+        value: "543643966289379"
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: COOKIE_SECURE
+        value: "True"
+      - key: SIGNING_KEY
+        fromService:
+          name: estate-mngt-api
+          type: web
+          envVarKey: SIGNING_KEY
+      - key: EMAIL_HOST
+        value: smtp.mailgun.org
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: SMTP_MAILGUN_PASSWORD
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        value: noreply@trainingwebdev.com
+      - key: DOMAIN
+        value: trainingwebdev.com
+
+  # ── Celery Beat (Background Worker) ──
+  - type: worker
+    name: estate-mngt-celery-beat
+    runtime: python
+    plan: starter
+    buildCommand: "pip install -r requirements/production.txt"
+    startCommand: "celery -A config.celery_app beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        fromService:
+          name: estate-mngt-api
+          type: web
+          envVarKey: DJANGO_SECRET_KEY
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: POSTGRES_HOST
+        value: ep-spring-fog-a8ejnwzx-pooler.eastus2.azure.neon.tech
+      - key: POSTGRES_PORT
+        value: "5432"
+      - key: POSTGRES_DB
+        value: estate_mngt_db
+      - key: POSTGRES_USER
+        value: neondb_owner
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+
+  # ── Next.js Frontend (Web Service) ──
+  - type: web
+    name: estate-mngt-client
+    runtime: node
+    plan: starter
+    rootDir: client
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_DOMAIN
+        value: https://trainingwebdev.com
+      - key: NEXT_PUBLIC_API_URL
+        sync: false # Set to your Django backend Render URL, e.g. https://estate-mngt-api.onrender.com
