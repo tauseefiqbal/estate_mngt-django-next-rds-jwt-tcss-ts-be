@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.http import Http404
 from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -37,6 +38,7 @@ class ApartmentDetailAPIView(generics.RetrieveAPIView):
     object_label = "apartment"
 
     def get_object(self) -> Apartment:
-        queryset = self.request.user.apartment.all()
-        obj = generics.get_object_or_404(queryset)
+        obj = self.request.user.apartment.first()
+        if obj is None:
+            raise Http404("You do not have an apartment yet.")
         return obj

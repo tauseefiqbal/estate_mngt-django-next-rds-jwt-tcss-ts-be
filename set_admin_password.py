@@ -8,7 +8,7 @@ django.setup()
 from core_apps.users.models import User
 
 user = User.objects.get(email="admin@estatemanagement.com")
-user.set_password("admin1234")
+user.set_password("admin123")
 user.save()
-print("Admin password set to: admin1234")
+print("Admin password set to: admin123")
 print("You can change this later using: python manage.py changepassword admin@estatemanagement.com")
