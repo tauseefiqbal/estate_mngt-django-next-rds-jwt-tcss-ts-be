@@ -2,17 +2,14 @@
 
 A full-stack estate/apartment management application built with **Django REST Framework** (backend) and **Next.js** (frontend). This system provides comprehensive tools for managing residential properties, tenant interactions, maintenance issues, and community engagement.
 
-## Email Functionality Note
-This project uses Mailgun for email services.
-Currently running in sandbox mode, so emails can only be sent to authorized recipients.
-To enable production emails, configure a custom domain and API key.
+**Email Functionality Note**
+This project uses Mailgun for email services. It is currently running in sandbox mode, so emails can only be sent to authorized recipients. To enable production email delivery, a custom domain and production-ready API configuration are required. For testing purposes, email verification for newly registered users has been temporarily disabled.
 
 ---
 
 ## Table of Contents
 
 - [Alpha Apartments — Estate Management System](#alpha-apartments--estate-management-system)
-  - [Email Functionality Note](#email-functionality-note)
   - [Table of Contents](#table-of-contents)
   - [Features](#features)
   - [Tech Stack](#tech-stack)
