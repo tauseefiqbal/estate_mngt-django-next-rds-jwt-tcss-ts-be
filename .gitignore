@@ -1,0 +1,26 @@
+# Environment files
+.envs/*
+!.envs/.env.example
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
