@@ -15,7 +15,7 @@ django-filter==24.3
 drf-yasg==1.21.8
 
 # PostgreSQL
-psycopg[binary]==3.2.3
+psycopg[binary]==3.2.13
 dj-database-url==2.3.0
 
 # Celery and Redis (will run in EAGER mode on Vercel)
@@ -29,7 +29,7 @@ flower==2.0.1
 cloudinary==1.41.0
 
 # Other utilities
-pillow==11.0.0
+pillow>=11.1.0
 phonenumbers==8.13.50
 pyjwt==2.10.1
 python-decouple==3.8
