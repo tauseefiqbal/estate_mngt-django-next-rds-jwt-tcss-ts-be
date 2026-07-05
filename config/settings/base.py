@@ -199,6 +199,7 @@ AUTH_USER_MODEL = "users.User"
 if USE_TZ:
     CELERY_TIMEZONE = TIME_ZONE
 
+# Celery Configuration (optional - gracefully handles missing broker)
 CELERY_BROKER_URL = getenv("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND")
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -224,6 +225,12 @@ CELERY_BEAT_SCHEDULE = {
         "task": "update_all_reputations",
     }
 }
+
+# Set task_always_eager=True when Celery broker is not available
+# This makes tasks execute synchronously instead of failing
+if not CELERY_BROKER_URL:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
 
 CLOUDINARY_CLOUD_NAME = getenv("CLOUDINARY_CLOUD_NAME")
 CLOUDINARY_API_KEY = getenv("CLOUDINARY_API_KEY")

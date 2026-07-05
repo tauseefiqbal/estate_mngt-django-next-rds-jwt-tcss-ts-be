@@ -90,6 +90,7 @@ class AvatarUploadView(APIView):
 
             image_content = image.read()
 
+            # Use Celery if available, otherwise executes synchronously
             upload_avatar_to_cloudinary.delay(str(profile.id), image_content)
 
             return Response(
