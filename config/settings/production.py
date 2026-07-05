@@ -1,13 +1,7 @@
-from os import getenv, path
-from dotenv import load_dotenv
+from os import getenv
 from .base import *  # noqa
-from .base import BASE_DIR
 
-prod_env_file = path.join(BASE_DIR, ".envs", ".env.production")
-
-if path.isfile(prod_env_file):
-    load_dotenv(prod_env_file)
-
+# Vercel provides environment variables directly - no need for .env files
 DEBUG = False
 
 SECRET_KEY = getenv(
@@ -20,7 +14,12 @@ ALLOWED_HOSTS = getenv("DJANGO_ALLOWED_HOSTS", ".trainingwebdev.com").split(",")
 ADMINS = [
     ("Alpha Omondi Ogilo", "api.imperfect@gmail.com"),
 ]
-EMAIL_BACKEND = "djcelery_email.backends.CeleryEmailBackend"
+# Use Anymail directly for serverless (no Celery needed)
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+ANYMAIL = {
+    "MAILGUN_API_KEY": getenv("SMTP_MAILGUN_PASSWORD"),
+    "MAILGUN_SENDER_DOMAIN": getenv("DOMAIN"),
+}
 EMAIL_HOST = getenv("EMAIL_HOST")
 EMAIL_PORT = getenv("EMAIL_PORT")
 EMAIL_HOST_USER = getenv("EMAIL_HOST_USER")
