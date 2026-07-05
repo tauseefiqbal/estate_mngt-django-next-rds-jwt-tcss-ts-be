@@ -1,0 +1,40 @@
+# Vercel deployment requirements
+# Core requirements inlined for Vercel compatibility
+
+# Django and extensions
+django==5.0.9
+django-environ==0.11.2
+django-cors-headers==4.6.0
+django-countries==7.6.1
+django-phonenumber-field==8.0.0
+django-autoslug==1.9.9
+django-taggit==6.1.0
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.4.0
+django-filter==24.3
+drf-yasg==1.21.8
+
+# PostgreSQL
+psycopg[binary]==3.2.3
+dj-database-url==2.3.0
+
+# Celery and Redis (will run in EAGER mode on Vercel)
+celery==5.4.0
+redis==5.2.1
+django-celery-beat==2.7.0
+django-celery-results==2.5.1
+flower==2.0.1
+
+# Cloud storage
+cloudinary==1.41.0
+
+# Other utilities
+pillow==11.0.0
+phonenumbers==8.13.50
+pyjwt==2.10.1
+python-decouple==3.8
+pytz==2024.2
+gunicorn==23.0.0
+
+# Email backend
+django-anymail[mailgun]==13.0
